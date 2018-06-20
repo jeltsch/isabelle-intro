@@ -33,7 +33,8 @@ next
     by (rule arg_cong [OF mirror_branch])
   also have "\<dots> = Branch x (mirror (mirror t\<^sub>1)) (mirror (mirror t\<^sub>2))"
     by (rule mirror_branch)
-  also have "\<dots> = Branch x t\<^sub>1 t\<^sub>2" using Branch.IH by simp
+  also have "\<dots> = Branch x t\<^sub>1 t\<^sub>2"
+    by (simp add: Branch.IH)
   finally show ?case .
 qed
 
