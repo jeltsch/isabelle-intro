@@ -2,7 +2,7 @@ Introduction
 ============
 
 This is some code that I used for an introduction to Isabelle/HOL in
-Summer 2018.
+summer 2018.
 
 
 Building
