@@ -38,4 +38,65 @@ next
   finally show ?case .
 qed
 
+fun intersperse :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
+  "intersperse _ [] = []" |
+  "intersperse _ [x] = [x]" |
+  "intersperse y (x # xs) = x # y # intersperse y xs"
+
+value "intersperse (0 :: nat) [1]"
+value "intersperse (0 :: nat) [1, 2]"
+value "intersperse (0 :: nat) [1, 2, 3]"
+
+lemma "intersperse (0 :: nat) [1, 2, 3] = [1, 0, 2, 0, 3]"
+  by simp
+
+lemma intersperse_map: "map f (intersperse y xs) = intersperse (f y) (map f xs)"
+proof (induction xs rule: intersperse.induct)
+  case 1
+  show ?case by simp
+next
+  case 2
+  show ?case by simp
+next
+  case 3
+  then show ?case by simp
+qed
+
+lemma intersperse_map_explicit: "map f (intersperse y xs) = intersperse (f y) (map f xs)"
+proof (induction xs rule: intersperse.induct)
+  fix y
+  show "map f (intersperse y []) = intersperse (f y) (map f [])" by simp
+next
+  fix y and x
+  show "map f (intersperse y [x]) = intersperse (f y) (map f [x])" by simp
+next
+  fix y and x\<^sub>1 and x\<^sub>2 and xs
+  assume "map f (intersperse y (x\<^sub>2 # xs)) = intersperse (f y) (map f (x\<^sub>2 # xs))"
+  then show "map f (intersperse y (x\<^sub>1 # x\<^sub>2 # xs)) = intersperse (f y) (map f (x\<^sub>1 # x\<^sub>2 # xs))" by simp
+qed
+
+inductive closure :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool)" for r where
+  refl: "closure r x x" |
+  step: "\<lbrakk> r x y; closure r y z \<rbrakk> \<Longrightarrow> closure r x z"
+
+inductive closure' :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool)" for r where
+  refl': "closure' r x x" |
+  step': "\<lbrakk> closure' r x y; r y z \<rbrakk> \<Longrightarrow> closure' r x z"
+
+lemma closure_implies_closure': "closure r x y \<Longrightarrow> closure' r x y"
+proof (induction rule: closure.induct)
+  case refl
+  show ?case by (fact refl')
+next
+  case (step x y z)
+  from `closure' r y z` and `r x y` show "closure' r x z"
+  proof (induction rule: closure'.induct)
+    case refl'
+    then show ?case by (blast intro: closure'.intros)
+  next
+    case step'
+    then show ?case by (blast intro: closure'.step')
+  qed
+qed
+
 end
