@@ -1,6 +1,10 @@
+section \<open>Start\<close>
+
 theory Isabelle_Intro
   imports Main
 begin
+
+section \<open>Predefined Inductive Type\<close>
 
 fun sum_up_to :: "nat \<Rightarrow> nat" where
   "sum_up_to 0 = 0" |
@@ -14,6 +18,8 @@ next
   case Suc
   then show ?case by simp
 qed
+
+section \<open>Custom Inductive Type\<close>
 
 datatype 'a tree =
   Leaf |
@@ -38,6 +44,8 @@ next
   finally show ?case .
 qed
 
+section \<open>Computation Induction\<close>
+
 fun intersperse :: "'a \<Rightarrow> 'a list \<Rightarrow> 'a list" where
   "intersperse _ [] = []" |
   "intersperse _ [x] = [x]" |
@@ -47,8 +55,7 @@ value "intersperse (0 :: nat) [1]"
 value "intersperse (0 :: nat) [1, 2]"
 value "intersperse (0 :: nat) [1, 2, 3]"
 
-lemma "intersperse (0 :: nat) [1, 2, 3] = [1, 0, 2, 0, 3]"
-  by simp
+lemma "intersperse (0 :: nat) [1, 2, 3] = [1, 0, 2, 0, 3]" by simp
 
 lemma intersperse_map: "map f (intersperse y xs) = intersperse (f y) (map f xs)"
 proof (induction xs rule: intersperse.induct)
@@ -62,18 +69,23 @@ next
   then show ?case by simp
 qed
 
-lemma intersperse_map_explicit: "map f (intersperse y xs) = intersperse (f y) (map f xs)"
+lemma "map f (intersperse y xs) = intersperse (f y) (map f xs)" \<comment> \<open>now proved more explicitly\<close>
 proof (induction xs rule: intersperse.induct)
   fix y
-  show "map f (intersperse y []) = intersperse (f y) (map f [])" by simp
+  show "map f (intersperse y []) = intersperse (f y) (map f [])"
+    by simp
 next
   fix y and x
-  show "map f (intersperse y [x]) = intersperse (f y) (map f [x])" by simp
+  show "map f (intersperse y [x]) = intersperse (f y) (map f [x])"
+    by simp
 next
   fix y and x\<^sub>1 and x\<^sub>2 and xs
   assume "map f (intersperse y (x\<^sub>2 # xs)) = intersperse (f y) (map f (x\<^sub>2 # xs))"
-  then show "map f (intersperse y (x\<^sub>1 # x\<^sub>2 # xs)) = intersperse (f y) (map f (x\<^sub>1 # x\<^sub>2 # xs))" by simp
+  then show "map f (intersperse y (x\<^sub>1 # x\<^sub>2 # xs)) = intersperse (f y) (map f (x\<^sub>1 # x\<^sub>2 # xs))"
+    by simp
 qed
+
+section \<open>Inductive Predicate\<close>
 
 inductive closure :: "('a \<Rightarrow> 'a \<Rightarrow> bool) \<Rightarrow> ('a \<Rightarrow> 'a \<Rightarrow> bool)" for r where
   refl: "closure r x x" |
@@ -98,5 +110,7 @@ next
     then show ?case by (blast intro: closure'.step')
   qed
 qed
+
+section \<open>End\<close>
 
 end
